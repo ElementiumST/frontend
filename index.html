@@ -88,12 +88,54 @@
 
             })
             Vue.component('tab-счетчики', {
+                props: ['title', 'amount'],
                 template: `<div><counter v-for="counterInstance in $root.counters"
                             :key='counterInstance.key'
                             :id='counterInstance.id'
                             :type='counterInstance.type'
-                            :amount='counterInstance.amount'></counter></div>`,
+                            :amount='counterInstance.amount'></counter>
+        
+                            
+                            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">Добавить новый счетчик</button>
+                            
 
+                            <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLabel">New message</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <form>
+                                    <div class="form-group">
+                                        <label for="recipient-name" class="col-form-label">Название:</label>
+                                        <input v-model="this.title" placeholder="Дороги отремонтированно (км)" type="text" class="form-control" id="recipient-name">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="message-text" class="col-form-label">Значение:</label>
+                                        <input v-model="this.amount" placeholder="0" type="text" class="form-control" id="recipient-name">
+                                    </div>
+                                    </form>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+                                    <button v-on:click='this.addNewCounter' class="btn btn-primary" data-dismiss="modal" onclick="return false;">Добавить новый</button>
+                                </div>
+                                </div>
+                            </div>
+                            </div>
+                            </div>`,
+                methods: {
+                    addNewCounter: function() {
+                        createRequest('/api/counters/', 'POST', { type: this.title, amount: this.amount}, () => {
+                            if(xhr.status == 200) alert(Успешно)
+                            this.created
+                        })
+                    }
+                },
                 created: function () {
                         createRequest(`/api/counters/`, "GET", null, () => {
                             if(xhr.status != 200)

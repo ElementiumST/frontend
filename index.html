@@ -29,7 +29,7 @@
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
         <script>
-            let serverURL='https://jsonplaceholder.typicode.com/'
+            let serverURL='http://localhost:54288'
             let adressList = {
 
             }
@@ -77,11 +77,12 @@
                     <div class="form-group mx-sm-3 mb-2">
                         <input v-model="this.amount" class="form-control" id="inputPassword2" :placeholder="amount">
                     </div>
-                    <button v-on:click='this.save(this.id, this.amount)' class="btn btn-primary" onclick="return false;">сохранить</button>
+                    <button v-on:click='this.save' class="btn btn-primary" onclick="return false;">сохранить</button>
                 </form>`,
                 methods: {
                     save: function(id, amount) {
-                        //TODO request
+                        createRequest(`/api/counter/${this.id}/${this.amount}`, "PUT", null, () => {alert(xhr.status==200? 'yes': 'no')})
+                        return null;
                     }   
                 }
 
@@ -94,12 +95,11 @@
                             :amount='counterInstance.amount'></counter></div>`,
 
                 created: function () {
-                        this.$root.counters = [
-                            {key: 0, id: "3fa85f64-5717-4562-b3fc-2c963f66afa6", type: "counter 1", amount: 2},
-                            {key: 1, id: "3fa85f64-5717-4562-b3fc-2c963f66afa6", type: "counter 2", amount: 4},
-                            {key: 2, id: "3fa85f64-5717-4562-b3fc-2c963f66afa6", type: "counter 3", amount: 8},
-                            {key: 3, id: "3fa85f64-5717-4562-b3fc-2c963f66afa6", type: "counter 4", amount: 16}]
-                        //TODO request
+                        createRequest(`/api/counters/`, "GET", null, () => {
+                            if(xhr.status != 200)
+                                console.log(xhr.response)
+                            this.$root.counters = JSON.parse(xhr.response)
+                        })
                     }
             })
             Vue.component('nav-notnews', {
@@ -112,7 +112,8 @@
                 methods: {
                     addPost: function(title, text) {
                         let type = 'Healthcare'
-                        //TODO request
+                        createRequest(`/api/counter/${this.id}/${this.amount}`, "PUT", null, () => {console.log(xhr.response)})
+
                     }
                 }
             })

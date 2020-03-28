@@ -1,0 +1,58 @@
+.logo-image {
+    position: 0;
+}
+body {
+    margin: 0;
+}
+.marginActive {
+    margin-left: 220px;
+    padding: 2rem;
+}
+.nav-element {
+    color: #21252985;
+}
+.nav-element:hover {
+    color: #212529c5;
+    cursor: pointer;
+}
+.activeBlack {
+    color: #212529;
+    cursor: pointer;
+}
+.active {
+    filter: brightness(100%);
+}
+.tab-element {
+    filter: brightness(70%);
+    width: 219px;
+    height: 60px;
+    padding-top: 17px;
+}
+.tab-element:hover {
+    filter: brightness(100%);
+    cursor: pointer;
+}
+.tab-element p{
+    color: #FFF;
+    float: left;
+    margin: 0px;
+    margin-left: 5px;
+    
+}
+.tab-element img{
+    float: left;
+    margin-left: 10px;
+}
+.active {
+    background-color: #1890ff;
+}
+.header {
+    display: inline-block;
+}
+.header p{
+    float: left;
+    font-size: 20px;
+    height: 20px;
+    width: auto;
+    margin-right: 20px;
+}

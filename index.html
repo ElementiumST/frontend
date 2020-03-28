@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8"> 
+        <title>4team app</title>
+        <link rel="stylesheet" href="style.css"/>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">    </head>
+    <body>
+        <div id="root" >
+            <div v-if="auth.isAuth" class="border-right" style="position: fixed; top: 0; left: 0; height: 100%; width: 220px; background-color: #001529;">
+                <div class="logo-image">
+                    <img src="assets/1.jpg" alt="" style="width: 220px;">
+                </div>
+                <nav-ref
+                    v-for="page in pages"
+                    :key=page.id
+                    :page=page
+                />
+            </div>
+            <div v-bind:class="[auth.isAuth ? 'marginActive' : '']">
+                <keep-alive id='socket'>
+                    <component v-bind:is="currentTabComponent">
+                    </component>
+                </keep-alive>
+            </div>
+        </div>
+        <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+        <script>
+            let serverURL='https://jsonplaceholder.typicode.com/'
+            let adressList = {
+
+            }
+            const xhr = new XMLHttpRequest()
+            function createRequest(subURI, type, data, onload) {
+                let fullyURL = serverURL+subURI
+                xhr.open(type, fullyURL);
+                if(type == 'POST'){
+                        xhr.setRequestHeader("Content-type", "application/json");
+                    }   
+                xhr.onload = onload;
+                if(data != null)
+                    xhr.send(data);
+                else
+                    xhr.send();
+            }
+            let newsBlock = `
+            <h3 class="nav-element">Новости</h3>
+            <div class="dropdown-divider"></div>
+            `
+            let titleField = `
+            <div class="form-group">
+                <label for="exampleFormControlInput1">Заголовок</label>
+                <input v-model="this.title" class="form-control" id="exampleFormControlInput1">
+            </div>
+            `
+            let textFild = `
+            <div class="form-group">
+                <label for="exampleFormControlTextarea1">Текст</label>
+                <textarea v-model="this.text" class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+            </div>`
+            let addButton = `<button type="button" v-on:click="addPost(this.title, this.text)"class="btn btn-primary">Добавить</button>`
+
+            Vue.component('counter', {
+                props: [
+                    'id',
+                    'type',
+                    'amount'
+                ],
+                template: `
+                <form class="form-inline">
+                    <div class="form-group mb-2">
+                        <input type="text" readonly class="form-control-plaintext" id="staticEmail2" :value="type">
+                    </div>
+                    <div class="form-group mx-sm-3 mb-2">
+                        <input v-model="this.amount" class="form-control" id="inputPassword2" :placeholder="amount">
+                    </div>
+                    <button v-on:click='this.save(this.id, this.amount)' class="btn btn-primary" onclick="return false;">сохранить</button>
+                </form>`,
+                methods: {
+                    save: function(id, amount) {
+                        //TODO request
+                    }   
+                }
+
+            })
+            Vue.component('tab-счетчики', {
+                template: `<div><counter v-for="counterInstance in $root.counters"
+                            :key='counterInstance.key'
+                            :id='counterInstance.id'
+                            :type='counterInstance.type'
+                            :amount='counterInstance.amount'></counter></div>`,
+
+                created: function () {
+                        this.$root.counters = [
+                            {key: 0, id: "3fa85f64-5717-4562-b3fc-2c963f66afa6", type: "counter 1", amount: 2},
+                            {key: 1, id: "3fa85f64-5717-4562-b3fc-2c963f66afa6", type: "counter 2", amount: 4},
+                            {key: 2, id: "3fa85f64-5717-4562-b3fc-2c963f66afa6", type: "counter 3", amount: 8},
+                            {key: 3, id: "3fa85f64-5717-4562-b3fc-2c963f66afa6", type: "counter 4", amount: 16}]
+                        //TODO request
+                    }
+            })
+            Vue.component('nav-notnews', {
+                props:['title','text',],
+                template: `<div>not news</div>`,
+            })
+            Vue.component('nav-news', {
+                props:['title','text',],
+                template: `<div>${titleField} ${textFild} ${addButton}</div>`,
+                methods: {
+                    addPost: function(title, text) {
+                        let type = 'Healthcare'
+                        //TODO request
+                    }
+                }
+            })
+            Vue.component('nav-block', {
+                props: ['type'],
+                template: `<div>
+                    <div class="header">
+                        <p v-for="tab in $root.tabs" v-bind:class="[$root.selectedNav==tab.id ? 'activeBlack' : 'nav-element']"
+                            v-on:click="onClick(tab)">{{tab.title}}</p>
+                        </div>
+                    <div class="dropdown-divider"></div>
+                    <component v-bind:is="$root.currentNavComponent"></component>
+                </div>`,
+                methods: {
+                    onClick: function(tab) {
+                        this.$root.selectedNav=tab.id
+                    }
+                }
+                
+            })
+            Vue.component('tab-здравоохранение', {
+                template: `<nav-block type='Education'></nav-block>`
+            })
+            Vue.component('tab-образование', {
+                template: `<nav-block type='Education'></nav-block>` 
+            })
+            Vue.component('tab-бкад', {
+                template: `<nav-block type='Education'></nav-block>`
+            })
+
+            Vue.component('tab-login', {
+                template: `
+                <div class="d-flex justify-content-center">
+                <div class="card" style="width: 18rem; margin-top:120px;">
+                        <div class="card-header">
+                            Авторизация
+                        </div>
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label for="exampleInputEmail1">Имя пользователя</label>
+                                <input v-model="$root.auth.login" type="username" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                            </div>
+                            <div class="form-group">
+                                <label for="exampleInputPassword1">Пароль</label>
+                                <input v-model="$root.auth.password" type="password" class="form-control" id="exampleInputPassword1">
+                            </div>
+                            <button type="button" class="btn btn-primary" v-on:click="login($root.auth.login, $root.auth.password)">Вход</button>
+                        </div>
+                        
+                    </div>
+                </div> 
+                    `,
+                methods: {
+                    login: function(name, pass) {
+                        this.$root.auth.isAuth = true;
+                        //TODO request
+                        this.style="padding: 2rem; margin-left: 220px;"
+                    }
+                }})
+            Vue.component('nav-ref', {
+                props: ['page'],
+                template: `
+                <div v-on:click="changeLay(page.id)" :style="page.style" class="tab-element">
+                    <img :src="page.image" alt="">
+                    <p>{{page.title}}</p>
+                </div>
+                `,
+                
+                methods: {
+                    changeLay: function(pageId) {
+                        this.page.style = 'background-color: #1890ff; filter: brightness(100%);'                        
+                        if(this.$root.selected != this.page.id){
+                            this.$root.refresh(this.$root)
+                            this.$root.selected = pageId;
+                        }
+                    }
+                 
+                }
+            })
+            Vue.component('pages', {
+            })
+            let app = new Vue({
+                el: '#root',
+                data: {
+                    pages: [
+                    {id: 0, title: 'Счетчики', style: 'background-color: #1890ff; filter: brightness(100%);', image: 'assets/icons8-100-25.png'},
+                    {id: 1, title: 'Здравоохранение', style: '', image: 'assets/icons8-саквояж-врача-25.png'},
+                    {id: 2, title: 'Образование', style: '', image: 'assets/icons8-сберкнижка-25.png'},
+                    {id: 3, title: 'БКАД', style: '', image: 'assets/icons8-дорога-25.png'}
+                    ],
+                    selected: 0,
+                    auth: {isAuth: false, login: null, password: null},
+                    counters: [],
+                    tabs: [
+                        {id: 0, name: "news", title:"Опубликовать"},
+                        {id: 1, name: 'notnews', title: "Список новостей"}
+                    ],
+                    selectedNav: 0
+                },
+                computed: {
+                    currentTabComponent: function() {
+                        if(this.auth.isAuth) {
+                            console.log('tab-'+this.pages[this.selected].title);
+                            return 'tab-'+this.pages[this.selected].title.toLowerCase();
+                        } else {
+                            return 'tab-login';
+                        }
+                    },
+                    currentNavComponent: function() {
+                        if(this.selected>0) {
+                            console.log('nav-'+this.tabs[this.selectedNav].name);
+                            return 'nav-'+this.tabs[this.selectedNav].name.toLowerCase();
+                        } else {
+                            return null;
+                        }
+                    }
+                },
+                methods: {
+                    refresh: function(root) {
+                        root.pages[root.selected].style = ''
+                    },
+                }
+            })
+        </script>
+    </body>
+</html>
